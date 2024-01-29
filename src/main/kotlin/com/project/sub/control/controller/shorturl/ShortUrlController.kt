@@ -55,16 +55,6 @@ class ShortUrlController {
         return ResponseEntity.status(HttpStatus.OK).body(shortUrlMaps)
     }
 
-    @GetMapping("{short_url}")
-    fun directShortUrlToSubUrl(@PathVariable short_url: String): ResponseEntity<String> {
-        val shortUrlMaps = shortUrlMapRepository.findShortUrlMapByShortUrl(short_url)
-        if (shortUrlMaps.isEmpty || shortUrlMaps.get().shortUrl.isEmpty()) throw Exception("${short_url} is not found")
-        if (shortUrlMaps.get().subscriptionUrl == null) {
-            throw Exception("Subscription url for ${short_url} is not found")
-        }
-        return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(shortUrlMaps.get().subscriptionUrl)).build()
-    }
-
     fun decode(url: String) = URLDecoder.decode(url, "UTF-8")
     fun encode(url: String) = URLEncoder.encode(url, "UTF-8")
 
@@ -94,4 +84,16 @@ class ShortUrlController {
         }
         return ResponseEntity.status(HttpStatus.OK).body("  ")
     }
+
+    @GetMapping("{short_url}")
+    fun directShortUrlToSubUrl(@PathVariable short_url: String): ResponseEntity<String> {
+        val shortUrlMaps = shortUrlMapRepository.findShortUrlMapByShortUrl(short_url)
+        if (shortUrlMaps.isEmpty || shortUrlMaps.get().shortUrl.isEmpty()) throw Exception("${short_url} is not found")
+        if (shortUrlMaps.get().subscriptionUrl == null) {
+            throw Exception("Subscription url for ${short_url} is not found")
+        }
+        return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(shortUrlMaps.get().subscriptionUrl)).build()
+    }
+
+
 }
