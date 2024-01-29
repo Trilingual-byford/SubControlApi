@@ -9,7 +9,11 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.client.RestTemplate
 import java.net.URI
+import java.net.URLDecoder
+import java.net.URLEncoder
+import java.util.*
 
 
 @RestController
@@ -22,6 +26,9 @@ class ShortUrlController {
 
     @Autowired
     lateinit var originalSubUrlRepository: OriginalSubUrlRepository
+
+    private val restTemplate = RestTemplate()
+
 
     val shortUrlDomain = "http://localhost:8080/"
 
@@ -56,5 +63,35 @@ class ShortUrlController {
             throw Exception("Subscription url for ${short_url} is not found")
         }
         return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(shortUrlMaps.get().subscriptionUrl)).build()
+    }
+
+    fun decode(url: String) = URLDecoder.decode(url, "UTF-8")
+    fun encode(url: String) = URLEncoder.encode(url, "UTF-8")
+
+    @GetMapping("test")
+    fun decoderTestEndpoint(): ResponseEntity<String> {
+        val responseEntity = restTemplate.getForEntity(
+            URI("https://nanbeicloud.net/api/v1/client/subscribe?token=f32205231752adfee8d8a2ee37028c3f&flag=shadowrocket"),
+            String::class.java
+        )
+        responseEntity.body.let {
+            println("Before decode")
+            println(it)
+            val decodedBytes: ByteArray = Base64.getDecoder().decode(it)
+            val decodedString = String(decodedBytes)
+            println("After decode")
+            println(decodedString)
+            println("After utf8 encode")
+            val utf8String = String(decodedString.toByteArray(), Charsets.UTF_8)
+            println(utf8String)
+            println("After url decode")
+            val decodedUrl = decode(decodedString)
+            println(decodedUrl)
+            println("After url encode")
+            val encodedUrl = encode(decodedUrl)
+            println(encodedUrl)
+            return ResponseEntity.status(HttpStatus.OK).body(decodedUrl)
+        }
+        return ResponseEntity.status(HttpStatus.OK).body("  ")
     }
 }
