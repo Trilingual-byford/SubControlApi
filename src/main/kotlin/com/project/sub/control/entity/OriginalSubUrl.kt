@@ -13,7 +13,7 @@ data class OriginalSubUrl(
     val urlId: Int?,
     @Column(name = "original_url", nullable = false)
     val originalUrl: String,
-    @Column(name = "subscription_url", nullable = false)
+    @Column(name = "subscription_url", nullable = false, length = 10000)
     val subscriptionUrl: String,
     val connectionStatus: ConnectStatus?,
     @Column(name = "added_by", nullable = false)

@@ -16,7 +16,7 @@ data class ShortUrlMap(
     val shortUrl: String,
     @Column(name = "user_id")
     val userId: UUID?,
-    @Column(name = "subscription_url")
+    @Column(name = "subscription_url", length = 10000)
     var subscriptionUrl: String?,
     @Column(name = "expire_date")
     val expireDate: Date?,
