@@ -13,7 +13,6 @@ import org.springframework.web.client.RestTemplate
 import java.net.URI
 import java.net.URLDecoder
 import java.net.URLEncoder
-import java.util.*
 
 
 @RestController
@@ -57,7 +56,7 @@ class ShortUrlController {
 
     fun decode(url: String) = URLDecoder.decode(url, "UTF-8")
     fun encode(url: String) = URLEncoder.encode(url, "UTF-8")
-    
+
 
     @GetMapping("{short_url}")
     fun directShortUrlToSubUrl(@PathVariable short_url: String): ResponseEntity<String> {
@@ -66,6 +65,10 @@ class ShortUrlController {
         if (shortUrlMaps.get().subscriptionUrl == null) {
             throw Exception("Subscription url for ${short_url} is not found")
         }
+        shortUrlMaps.get().subscriptionUrl?.let {
+            println("redirect to ${shortUrlMaps.get().subscriptionUrl}")
+        }
+        println("redirect to ${shortUrlMaps.get().subscriptionUrl}")
         return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(shortUrlMaps.get().subscriptionUrl)).build()
     }
 
