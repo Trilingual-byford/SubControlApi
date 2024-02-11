@@ -4,13 +4,14 @@ import com.project.sub.control.entity.ShortUrlMap
 import com.project.sub.control.repository.OriginalSubUrlRepository
 import com.project.sub.control.repository.ShortUrlMapRepository
 import jakarta.validation.Valid
+import org.hibernate.query.sqm.tree.SqmNode.log
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.client.RestTemplate
-import java.net.URI
+import org.springframework.web.servlet.view.RedirectView
 import java.net.URLDecoder
 import java.net.URLEncoder
 
@@ -57,20 +58,17 @@ class ShortUrlController {
     fun decode(url: String) = URLDecoder.decode(url, "UTF-8")
     fun encode(url: String) = URLEncoder.encode(url, "UTF-8")
 
-
     @GetMapping("{short_url}")
-    fun directShortUrlToSubUrl(@PathVariable short_url: String): ResponseEntity<String> {
+    fun directShortUrlToSubUrl(@PathVariable short_url: String): RedirectView {
         val shortUrlMaps = shortUrlMapRepository.findShortUrlMapByShortUrl(short_url)
-        if (shortUrlMaps.isEmpty || shortUrlMaps.get().shortUrl.isEmpty()) throw Exception("${short_url} is not found")
-        if (shortUrlMaps.get().subscriptionUrl == null) {
+        if (shortUrlMaps.isEmpty || shortUrlMaps.get().shortUrl.isEmpty()) {
+            throw Exception("${short_url} is not found")
+        }
+        val subscriptionUrl = shortUrlMaps.get().subscriptionUrl
+        if (subscriptionUrl == null) {
             throw Exception("Subscription url for ${short_url} is not found")
         }
-        shortUrlMaps.get().subscriptionUrl?.let {
-            println("redirect to ${shortUrlMaps.get().subscriptionUrl}")
-        }
-        println("redirect to ${shortUrlMaps.get().subscriptionUrl}")
-        return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(shortUrlMaps.get().subscriptionUrl)).build()
+        log.info("redirect to $subscriptionUrl")
+        return RedirectView(subscriptionUrl)
     }
-
-
 }
