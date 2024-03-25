@@ -1,5 +1,5 @@
 FROM openjdk:17-oracle
 WORKDIR /app
-COPY target/SubscriptionContrApi-0.0.1-SNAPSHOT.jar .
-EXPOSE 8080
-ENTRYPOINT ["java","-jar","SubscriptionContrApi-0.0.1-SNAPSHOT.jar"]
+COPY target/SubscriptionContrApi-1.0.0-SNAPSHOT.jar .
+EXPOSE 8000
+ENTRYPOINT ["java","-jar","SubscriptionContrApi-1.0.0-SNAPSHOT.jar"]
