@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "com.project.proxy"
-version = "1.0.0-SNAPSHOT"
+version = "1.0.0-prod-8080"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
